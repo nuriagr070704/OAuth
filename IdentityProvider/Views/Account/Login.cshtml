@@ -1,0 +1,72 @@
+@model LoginViewModel
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <b>Inicia sesión en tu cuenta</b>
+                    <p class="mb-0">Ingresa tu correo electrónico para accder a tu cuenta</p>
+                </div>
+                <div class="card-body">
+                    <partial name="_ValidationSummary" />
+
+                    @if (Model.EnableLocalLogin)
+                    {
+                        <form asp-route="Login" novalidate>
+                            <input type="hidden" asp-for="ReturnUrl" />
+                            <div class="mb-3">
+                                <label asp-for="Username" class="form-label">Usuario</label>
+                                <input class="form-control" placeholder="m@example.com" asp-for="Username" autofocus />
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Password" class="form-label">Contraseña</label>
+                                <input type="password" class="form-control" asp-for="Password" autocomplete="off" />
+                            </div>
+
+                            @if (Model.AllowRememberLogin)
+                            {
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" asp-for="RememberLogin" id="rememberLogin" />
+                                    <label class="form-check-label" for="rememberLogin">
+                                        Recuerda mi usuario
+                                    </label>
+                                </div>
+                            }
+
+                            <div class="d-flex justify-content-between">
+                                <button type="submit" class="btn btn-primary" name="button" value="login">Entrar</button>
+                            </div>
+                        </form>
+                    }
+
+                    @if (Model.VisibleExternalProviders.Any())
+                    {
+                        <hr />
+                        <h5 class="text-center">O inicia sesión con</h5>
+                        <div class="d-flex justify-content-center gap-2 flex-wrap">
+                            @foreach (var provider in Model.VisibleExternalProviders)
+                            {
+                                <a class="btn btn-outline-primary"
+                                   asp-controller="External"
+                                   asp-action="Challenge"
+                                   asp-route-scheme="@provider.AuthenticationScheme"
+                                   asp-route-returnUrl="@Model.ReturnUrl">
+                                    @provider.DisplayName
+                                </a>
+                            }
+                        </div>
+                    }
+
+                    @if (!Model.EnableLocalLogin && !Model.VisibleExternalProviders.Any())
+                    {
+                        <div class="alert alert-warning mt-3" role="alert">
+                            <strong>Solicitud de inicio de sesión inválida.</strong><br />
+                            No hay esquemas de inicio de sesión configurados para esta solicitud.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
