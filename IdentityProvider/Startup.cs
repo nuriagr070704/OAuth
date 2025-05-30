@@ -17,11 +17,11 @@ namespace IdentityProvider
             services.AddControllersWithViews();
 
             // using local db (assumes Visual Studio has been installed)
-            const string connectionString = @"Data Source=(LocalDb)\MSSQLLocalDB;database=Test.IdentityServer.EntityFramework;trusted_connection=yes;";
+            const string connectionString = "Host=localhost;Port=5433;Database=mydb;Username=admin;Password=admin123;";
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
             services.AddDbContext<ApplicationDbContext>(builder =>
-                builder.UseSqlServer(connectionString, sqlOptions => sqlOptions.MigrationsAssembly(migrationsAssembly)));
+                builder.UseNpgsql(connectionString, npgsqlOptions => npgsqlOptions.MigrationsAssembly(migrationsAssembly)));
 
             services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -46,11 +46,11 @@ namespace IdentityProvider
             });
 
             identityServerBuilder.AddOperationalStore(options =>
-                    options.ConfigureDbContext = builder =>
-                        builder.UseSqlServer(connectionString, sqlOptions => sqlOptions.MigrationsAssembly(migrationsAssembly)))
-                .AddConfigurationStore(options =>
-                    options.ConfigureDbContext = builder =>
-                        builder.UseSqlServer(connectionString, sqlOptions => sqlOptions.MigrationsAssembly(migrationsAssembly)));
+                options.ConfigureDbContext = builder =>
+                    builder.UseNpgsql(connectionString, npgsqlOptions => npgsqlOptions.MigrationsAssembly(migrationsAssembly)))
+            .AddConfigurationStore(options =>
+                options.ConfigureDbContext = builder =>
+                    builder.UseNpgsql(connectionString, npgsqlOptions => npgsqlOptions.MigrationsAssembly(migrationsAssembly)));
 
             identityServerBuilder.AddAspNetIdentity<IdentityUser>();
         }
